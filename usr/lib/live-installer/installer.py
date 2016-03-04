@@ -41,7 +41,7 @@ class InstallerEngine:
         # Set other configuration
         config = _get_config_dict(CONFIG_FILE)
         self.live_user = config.get('live_user', 'user')
-        self.media = config.get('live_media_source', '/lib/live/mount/medium/live/filesystem.squashfs')
+        self.media = config.get('live_media_source', '/mnt/cdrom/image.squashfs')
         self.media_type = config.get('live_media_type', 'squashfs')
         # Flush print when it's called    
         sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
@@ -402,34 +402,34 @@ class InstallerEngine:
         os.system("echo \"%s\" > /target/etc/timezone" % setup.timezone)
         os.system("cp /target/usr/share/zoneinfo/%s /target/etc/localtime" % setup.timezone)
 
-        # localizing
-        print " --> Localizing packages"
-        self.update_progress(total=our_total, current=our_current, message=_("Localizing packages"))
-        if setup.language != "en_US":
-            os.system("mkdir -p /target/debs")
-            language_code = setup.language
-            if "_" in setup.language:
-                language_code = setup.language.split("_")[0]
-            l10ns = commands.getoutput("find /lib/live/mount/medium/pool | grep 'l10n-%s\\|hunspell-%s'" % (language_code, language_code))
-            for l10n in l10ns.split("\n"):
-                os.system("cp %s /target/debs/" % l10n)
-            self.do_run_in_chroot("dpkg -i /debs/*")
-            os.system("rm -rf /target/debs")
-
-        if os.path.exists("/etc/linuxmint/info"):
-            # drivers
-            print " --> Installing drivers"
-            self.update_progress(total=our_total, current=our_current, message=_("Installing drivers"))
-            drivers = commands.getoutput("mint-drivers")
-            if "broadcom-sta-dkms" in drivers:
-                try:
-                    os.system("mkdir -p /target/debs")
-                    os.system("cp /lib/live/mount/medium/pool/non-free/b/broadcom-sta/*.deb /target/debs/")
-                    self.do_run_in_chroot("dpkg -i /debs/*")
-                    self.do_run_in_chroot("modprobe wl")
-                    os.system("rm -rf /target/debs")
-                except:
-                    print "Failed to install Broadcom drivers"
+#        # localizing
+#        print " --> Localizing packages"
+#        self.update_progress(total=our_total, current=our_current, message=_("Localizing packages"))
+#        if setup.language != "en_US":
+#            os.system("mkdir -p /target/debs")
+#            language_code = setup.language
+#            if "_" in setup.language:
+#                language_code = setup.language.split("_")[0]
+#            l10ns = commands.getoutput("find /lib/live/mount/medium/pool | grep 'l10n-%s\\|hunspell-%s'" % (language_code, language_code))
+#            for l10n in l10ns.split("\n"):
+#                os.system("cp %s /target/debs/" % l10n)
+#            self.do_run_in_chroot("dpkg -i /debs/*")
+#            os.system("rm -rf /target/debs")
+#
+#        if os.path.exists("/etc/linuxmint/info"):
+#            # drivers
+#            print " --> Installing drivers"
+#            self.update_progress(total=our_total, current=our_current, message=_("Installing drivers"))
+#            drivers = commands.getoutput("mint-drivers")
+#            if "broadcom-sta-dkms" in drivers:
+#                try:
+#                    os.system("mkdir -p /target/debs")
+#                    os.system("cp /lib/live/mount/medium/pool/non-free/b/broadcom-sta/*.deb /target/debs/")
+#                    self.do_run_in_chroot("dpkg -i /debs/*")
+#                    self.do_run_in_chroot("modprobe wl")
+#                    os.system("rm -rf /target/debs")
+#                except:
+#                    print "Failed to install Broadcom drivers"
 
         # set the keyboard options..
         print " --> Setting the keyboard"
