@@ -239,14 +239,14 @@ class InstallerEngine:
         os.system("mv /target/etc/resolv.conf /target/etc/resolv.conf.bk")
         os.system("cp -f /etc/resolv.conf /target/etc/resolv.conf")
 
-        kernelversion= commands.getoutput("uname -r")
-        os.system("cp /lib/live/mount/medium/live/vmlinuz /target/boot/vmlinuz-%s" % kernelversion)
+        kernelversion = commands.getoutput("uname -r")
+        kernelmachine = commands.getoutput("uname -m")
+        os.system("cp /mnt/livecd/boot/kernel-genkernel-%s-%s /target/boot" % (kernelmachine, kernelversion))
         found_initrd = False
-        for initrd in ["/lib/live/mount/medium/live/initrd.img", "/lib/live/mount/medium/live/initrd.lz"]:
-            if os.path.exists(initrd):
-                os.system("cp %s /target/boot/initrd.img-%s" % (initrd, kernelversion))
-                found_initrd = True
-                break
+        initrd = "/mnt/livecd/boot/initramfs-genkernel-%s-%s" % (kernelmachine, kernelversion)
+        if os.path.exists(initrd):
+            os.system("cp %s /target/boot" % initrd)
+            found_initrd = True
 
         if not found_initrd:
             print "WARNING: No initrd found!!"
