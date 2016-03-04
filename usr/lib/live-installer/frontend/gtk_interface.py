@@ -498,17 +498,17 @@ class InstallerWindow:
         self.cur_country_code = cur_country_code or os.environ.get('LANG', 'US').split('.')[0].split('_')[-1]  # fallback to LANG location or 'US'
         self.cur_timezone = cur_timezone
 
-        #Load countries into memory
-        countries = {}
-        for line in commands.getoutput("isoquery --iso 3166 | cut -f1,4-").split('\n'):
-            ccode, cname = line.split(None, 1)
-            countries[ccode] = cname
-
-        #Load languages into memory
-        languages = {}
-        for line in commands.getoutput("isoquery --iso 639").split('\n'):
-            _, code3, code2, language = line.split('\t')
-            languages[code2 or code3] = language
+#        #Load countries into memory
+#        countries = {}
+#        for line in commands.getoutput("isoquery --iso 3166 | cut -f1,4-").split('\n'):
+#            ccode, cname = line.split(None, 1)
+#            countries[ccode] = cname
+#
+#        #Load languages into memory
+#        languages = {}
+#        for line in commands.getoutput("isoquery --iso 639").split('\n'):
+#            _, code3, code2, language = line.split('\t')
+#            languages[code2 or code3] = language
 
         # Construct language selection model
         model = gtk.ListStore(str, str, gtk.gdk.Pixbuf, str)
@@ -716,6 +716,7 @@ class InstallerWindow:
         # check each page for errors
         if(not goback):
             if(sel == self.PAGE_LANGUAGE):
+                self.setup.language = 'sl_SI'
                 if self.setup.language is None:
                     WarningDialog(_("Installation Tool"), _("Please choose a language"))
                 else:
