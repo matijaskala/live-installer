@@ -272,10 +272,25 @@ class InstallerEngine:
         # remove live-packages (or w/e)
         print " --> Removing live packages"
         our_current += 1
-        self.update_progress(total=our_total, current=our_current, message=_("Removing live configuration (packages)"))
-        with open("/lib/live/mount/medium/live/filesystem.packages-remove", "r") as fd:
-            line = fd.read().replace('\n', ' ')
-        self.do_run_in_chroot("apt-get remove --purge --yes --force-yes %s" % line)
+#        self.update_progress(total=our_total, current=our_current, message=_("Removing live configuration (packages)"))
+#        with open("/lib/live/mount/medium/live/filesystem.packages-remove", "r") as fd:
+#            line = fd.read().replace('\n', ' ')
+        self.do_run_in_chroot("emerge -C live-installer")
+
+        self.do_run_in_chroot("userdel -rf liveuser")
+
+        # LightDM
+        self.do_run_in_chroot(r"sed -i -r 's/^#?(autologin-user)\s*=.*/#\1={user}/' /etc/lightdm/lightdm.conf".format(user=setup.username))
+        # MDM
+        self.do_run_in_chroot(r"sed -i -r -e '/^AutomaticLogin(Enable)?\s*=/d' -e 's/^(\[daemon\])/\1\nAutomaticLoginEnable=false\nAutomaticLogin={user}/' /etc/mdm/mdm.conf".format(user=setup.username))
+        # GDM3
+        self.do_run_in_chroot(r"sed -i -r -e '/^(#\s*)?AutomaticLogin(Enable)?\s*=/d' -e 's/^(\[daemon\])/\1\nAutomaticLoginEnable=false\nAutomaticLogin={user}/' /etc/gdm3/daemon.conf".format(user=setup.username))
+        # KDE4
+        self.do_run_in_chroot(r"sed -i -r -e 's/^#?(AutomaticLoginEnable)\s*=.*/\1=false/' -e 's/^#?(AutomaticLoginUser)\s*.*/\1={user}/' /etc/kde4/kdm/kdmrc".format(user=setup.username))
+        # LXDM
+        self.do_run_in_chroot(r"sed -i -r -e 's/^#?(autologin)\s*=.*/#\1={user}/' /etc/lxdm/lxdm.conf".format(user=setup.username))
+        # SLiM
+        self.do_run_in_chroot(r"sed -i -r -e 's/^#?(default_user)\s.*/\1  {user}/' -e 's/^#?(auto_login)\s.*/\1  no/' /etc/slim.conf".format(user=setup.username))
 
         # add new user
         print " --> Adding new user"
@@ -284,10 +299,10 @@ class InstallerEngine:
         self.do_run_in_chroot('useradd -c "{real_name}" -m {username} -G adm,audio,bluetooth,cdrom,dialout,dip,fax,floppy,fuse,lpadmin,netdev,plugdev,powerdev,sambashare,scanner,sudo,tape,users,vboxusers,video'.format(real_name=setup.real_name.replace('"', r'\"'), username=setup.username))
 
         fp = open("/target/tmp/.passwd", "w")
-        fp.write(setup.username +  ":" + setup.password1 + "\n")
-        fp.write("root:" + setup.password1 + "\n")
+        fp.write(setup.password1 + "\n")
+        fp.write(setup.password1 + "\n")
         fp.close()
-        self.do_run_in_chroot("cat /tmp/.passwd | chpasswd")
+        self.do_run_in_chroot("cat /tmp/.passwd | passwd " + setup.username)
         os.system("rm -f /target/tmp/.passwd")
 
         # Set autologin for user if they so elected
