@@ -272,7 +272,7 @@ class InstallerEngine:
         # remove live-packages (or w/e)
         print " --> Removing live packages"
         our_current += 1
-#        self.update_progress(total=our_total, current=our_current, message=_("Removing live configuration (packages)"))
+        self.update_progress(total=our_total, current=our_current, message=_("Removing live configuration (packages)"))
 #        with open("/lib/live/mount/medium/live/filesystem.packages-remove", "r") as fd:
 #            line = fd.read().replace('\n', ' ')
         self.do_run_in_chroot("emerge -C live-installer")
@@ -417,9 +417,28 @@ class InstallerEngine:
         os.system("echo \"%s\" > /target/etc/timezone" % setup.timezone)
         os.system("cp /target/usr/share/zoneinfo/%s /target/etc/localtime" % setup.timezone)
 
-#        # localizing
-#        print " --> Localizing packages"
-#        self.update_progress(total=our_total, current=our_current, message=_("Localizing packages"))
+        # portage
+        print " --> Configuring portage"
+        self.update_progress(total=our_total, current=our_current, message=_("Configuring portage"))
+        reposfh = open("/target/etc/portage/repos.conf", "w")
+        reposfh.write("[DEFAULT]\n")
+        reposfh.write("main-repo = gentoo\n\n")
+        reposfh.write("[gentoo]\n")
+        reposfh.write("location = /usr/portage\n")
+        reposfh.write("sync-type = git\n")
+        reposfh.write("sync-uri = git://github.com/matijaskala/ports-2013.git\n")
+        reposfh.write("auto-sync = yes\n\n")
+        reposfh.close()
+        keywordsfh = open("/target/etc/portage/package.accept_keywords", "w+")
+        keywordsfh.write("sys-apps/shadow ~amd64\n")
+        keywordsfh.write("www-client/google-chrome ~amd64\n")
+        keywordsfh.close()
+        licensefh = open("/target/etc/portage/package.license", "w+")
+        licensefh.write("www-client/google-chrome google-chrome\n")
+        licensefh.close()
+        print " --> Syncing portage"
+        self.update_progress(total=our_total, current=our_current, message=_("Syncing portage"))
+        self.do_run_in_chroot("git clone git://github.com/matijaskala/ports-2013.git /usr/portage")
 #        if setup.language != "en_US":
 #            os.system("mkdir -p /target/debs")
 #            language_code = setup.language
@@ -432,9 +451,10 @@ class InstallerEngine:
 #            os.system("rm -rf /target/debs")
 #
 #        if os.path.exists("/etc/linuxmint/info"):
-#            # drivers
-#            print " --> Installing drivers"
-#            self.update_progress(total=our_total, current=our_current, message=_("Installing drivers"))
+        # chrome
+        print " --> Installing Google Chrome"
+        self.update_progress(total=our_total, current=our_current, message=_("Installing Google Chrome"))
+        self.do_run_in_chroot("emerge -q google-chrome shadow")
 #            drivers = commands.getoutput("mint-drivers")
 #            if "broadcom-sta-dkms" in drivers:
 #                try:
