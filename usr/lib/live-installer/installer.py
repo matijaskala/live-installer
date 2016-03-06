@@ -302,7 +302,7 @@ class InstallerEngine:
         fp.write(setup.password1 + "\n")
         fp.write(setup.password1 + "\n")
         fp.close()
-        self.do_run_in_chroot("cat /tmp/.passwd | passwd " + setup.username)
+        self.do_run_in_chroot("cat /tmp/.passwd | passwd " + setup.username + " 2> /dev/null")
         os.system("rm -f /target/tmp/.passwd")
 
         # Set autologin for user if they so elected
