@@ -470,38 +470,22 @@ class InstallerEngine:
         print " --> Setting the keyboard"
         our_current += 1
         self.update_progress(total=our_total, current=our_current, message=_("Setting keyboard options"))
-        consolefh = open("/target/etc/default/console-setup", "r")
         newconsolefh = open("/target/etc/default/console-setup.new", "w")
-        for line in consolefh:
-            line = line.rstrip("\r\n")
-            if(line.startswith("XKBMODEL=")):
-                newconsolefh.write("XKBMODEL=\"%s\"\n" % setup.keyboard_model)
-            elif(line.startswith("XKBLAYOUT=")):
-                newconsolefh.write("XKBLAYOUT=\"%s\"\n" % setup.keyboard_layout)
-            elif(line.startswith("XKBVARIANT=") and setup.keyboard_variant is not None):
-                newconsolefh.write("XKBVARIANT=\"%s\"\n" % setup.keyboard_variant)
-            else:
-                newconsolefh.write("%s\n" % line)
-        consolefh.close()
+        newconsolefh.write("XKBMODEL=\"%s\"\n" % setup.keyboard_model)
+        newconsolefh.write("XKBLAYOUT=\"%s\"\n" % setup.keyboard_layout)
+        if(setup.keyboard_variant is not None):
+            newconsolefh.write("XKBVARIANT=\"%s\"\n" % setup.keyboard_variant)
         newconsolefh.close()
-        self.do_run_in_chroot("rm /etc/default/console-setup")
+        self.do_run_in_chroot("rm -f /etc/default/console-setup")
         self.do_run_in_chroot("mv /etc/default/console-setup.new /etc/default/console-setup")
 
-        consolefh = open("/target/etc/default/keyboard", "r")
         newconsolefh = open("/target/etc/default/keyboard.new", "w")
-        for line in consolefh:
-            line = line.rstrip("\r\n")
-            if(line.startswith("XKBMODEL=")):
-                newconsolefh.write("XKBMODEL=\"%s\"\n" % setup.keyboard_model)
-            elif(line.startswith("XKBLAYOUT=")):
-                newconsolefh.write("XKBLAYOUT=\"%s\"\n" % setup.keyboard_layout)
-            elif(line.startswith("XKBVARIANT=") and setup.keyboard_variant is not None):
-                newconsolefh.write("XKBVARIANT=\"%s\"\n" % setup.keyboard_variant)
-            else:
-                newconsolefh.write("%s\n" % line)
-        consolefh.close()
+        newconsolefh.write("XKBMODEL=\"%s\"\n" % setup.keyboard_model)
+        newconsolefh.write("XKBLAYOUT=\"%s\"\n" % setup.keyboard_layout)
+        if(setup.keyboard_variant is not None):
+            newconsolefh.write("XKBVARIANT=\"%s\"\n" % setup.keyboard_variant)
         newconsolefh.close()
-        self.do_run_in_chroot("rm /etc/default/keyboard")
+        self.do_run_in_chroot("rm -f /etc/default/keyboard")
         self.do_run_in_chroot("mv /etc/default/keyboard.new /etc/default/keyboard")
 
         # Perform OS adjustments (this is needed prior to installing grub)
