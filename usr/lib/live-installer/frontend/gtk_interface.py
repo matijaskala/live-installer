@@ -520,21 +520,24 @@ class InstallerWindow:
             try:
                 if '_' in locale:
                     lang, ccode = locale.split('_')
-                    language, country = languages[lang], countries[ccode]
+                    language, country = lang, ccode
                 else:
                     lang = locale
-                    language = languages[lang]
+                    language = lang
                     country = ''
             except:
                 print "Error adding locale '%s'" % locale
                 continue
-            pixbuf = flag(ccode) if not lang in 'eo ia' else flag('_' + lang)
-            iter = model.append((language, country, pixbuf, locale))
-            if (ccode == cur_country_code and
-                (not set_iter or
-                 set_iter and lang == 'en' or  # prefer English, or
-                 set_iter and lang == ccode.lower())):  # fuzzy: lang matching ccode (fr_FR, de_DE, es_ES, ...)
-                set_iter = iter
+            try:
+                pixbuf = flag(ccode) if not lang in 'eo ia' else flag('_' + lang)
+                iter = model.append((language, country, pixbuf, locale))
+                if (ccode == cur_country_code and
+                    (not set_iter or
+                     set_iter and lang == 'en' or  # prefer English, or
+                     set_iter and lang == ccode.lower())):  # fuzzy: lang matching ccode (fr_FR, de_DE, es_ES, ...)
+                    set_iter = iter
+            except:
+                continue
 
         # Sort by Country, then by Language
         model.set_sort_column_id(0, gtk.SORT_ASCENDING)
