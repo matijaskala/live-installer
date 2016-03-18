@@ -275,7 +275,6 @@ class InstallerEngine:
         self.update_progress(total=our_total, current=our_current, message=_("Removing live configuration (packages)"))
 #        with open("/lib/live/mount/medium/live/filesystem.packages-remove", "r") as fd:
 #            line = fd.read().replace('\n', ' ')
-        self.do_run_in_chroot("emerge -C live-installer")
 
         self.do_run_in_chroot("userdel -rf liveuser")
 
@@ -437,9 +436,11 @@ class InstallerEngine:
         licensefh = open("/target/etc/portage/package.license", "w+")
         licensefh.write("www-client/google-chrome google-chrome\n")
         licensefh.close()
-        print " --> Syncing portage"
-        self.update_progress(total=our_total, current=our_current, message=_("Syncing portage"))
         self.do_run_in_chroot("git clone git://github.com/matijaskala/ports-2013.git /usr/portage")
+        self.do_run_in_chroot("emerge -C live-installer")
+
+#        print " --> Unmerging installer"
+#        self.update_progress(total=our_total, current=our_current, message=_("Unmerging installer"))
 #        if setup.language != "en_US":
 #            os.system("mkdir -p /target/debs")
 #            language_code = setup.language
