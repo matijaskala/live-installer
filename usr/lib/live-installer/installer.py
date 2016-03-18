@@ -297,7 +297,7 @@ class InstallerEngine:
         our_current += 1
         self.update_progress(total=our_total, current=our_current, message=_("Adding new user to the system"))
         self.do_run_in_chroot('groupadd -g 20 sudo')
-        self.do_run_in_chroot('useradd -c "{real_name}" -m {username} -G adm,audio,cdrom,floppy,lpadmin,netdev,plugdev,sudo,tape,users,video'.format(real_name=setup.real_name.replace('"', r'\"'), username=setup.username))
+        self.do_run_in_chroot('useradd -c "{real_name}" -m {username} -G adm,audio,cdrom,floppy,lpadmin,netdev,plugdev,sudo,tape,users,video,wheel'.format(real_name=setup.real_name.replace('"', r'\"'), username=setup.username))
 
         fp = open("/target/tmp/.passwd", "w")
         fp.write(setup.password1 + "\n")
