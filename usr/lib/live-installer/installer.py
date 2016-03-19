@@ -41,7 +41,7 @@ class InstallerEngine:
         # Set other configuration
         config = _get_config_dict(CONFIG_FILE)
         self.live_user = config.get('live_user', 'user')
-        self.media = '/mnt/cdrom/image.squashfs'
+        self.media = config.get('live_media_source', '/mnt/cdrom/image.squashfs')
         self.media_type = config.get('live_media_type', 'squashfs')
         # Flush print when it's called    
         sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
