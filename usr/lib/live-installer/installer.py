@@ -429,13 +429,6 @@ class InstallerEngine:
         reposfh.write("sync-uri = git://github.com/matijaskala/ports-2013.git\n")
         reposfh.write("auto-sync = yes\n\n")
         reposfh.close()
-        keywordsfh = open("/target/etc/portage/package.accept_keywords", "w+")
-        keywordsfh.write("sys-apps/shadow ~amd64\n")
-        keywordsfh.write("www-client/google-chrome ~amd64\n")
-        keywordsfh.close()
-        licensefh = open("/target/etc/portage/package.license", "w+")
-        licensefh.write("www-client/google-chrome google-chrome\n")
-        licensefh.close()
         self.do_run_in_chroot("git clone git://github.com/matijaskala/ports-2013.git /usr/portage")
         self.do_run_in_chroot("emerge -C live-installer")
 
@@ -453,10 +446,6 @@ class InstallerEngine:
 #            os.system("rm -rf /target/debs")
 #
 #        if os.path.exists("/etc/linuxmint/info"):
-        # chrome
-        print " --> Installing Google Chrome"
-        self.update_progress(total=our_total, current=our_current, message=_("Installing Google Chrome"))
-        self.do_run_in_chroot("emerge -q google-chrome shadow")
 #            drivers = commands.getoutput("mint-drivers")
 #            if "broadcom-sta-dkms" in drivers:
 #                try:
