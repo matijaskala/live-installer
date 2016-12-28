@@ -531,7 +531,7 @@ class InstallerWindow:
             try:
                 pixbuf = flag(ccode) if not lang in 'eo ia' else flag('_' + lang)
                 iter = model.append((language, country, pixbuf, locale))
-                if (ccode == cur_country_code and
+                if (ccode == self.cur_country_code and
                     (not set_iter or
                      set_iter and lang == 'en' or  # prefer English, or
                      set_iter and lang == ccode.lower())):  # fuzzy: lang matching ccode (fr_FR, de_DE, es_ES, ...)
@@ -719,7 +719,6 @@ class InstallerWindow:
         # check each page for errors
         if(not goback):
             if(sel == self.PAGE_LANGUAGE):
-                self.setup.language = 'sl_SI'
                 if self.setup.language is None:
                     WarningDialog(_("Installation Tool"), _("Please choose a language"))
                 else:
