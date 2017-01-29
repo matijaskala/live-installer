@@ -564,7 +564,7 @@ class InstallerEngine:
                 if("06_mint_theme" in line):
                     found_theme = True
                     print " --> Found Grub theme: %s " % line
-                if ("menuentry" in line and "class linuxmint" in line):
+                if ("menuentry" in line and "class gentoo" in line):
                     found_entry = True
                     print " --> Found Grub entry: %s " % line
             grubfh.close()
