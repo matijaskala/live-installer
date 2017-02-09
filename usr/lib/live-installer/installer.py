@@ -489,7 +489,7 @@ class InstallerEngine:
         if(setup.grub_device is not None):
             self.update_progress(pulse=True, total=our_total, current=our_current, message=_("Installing bootloader"))
             print " --> Running grub-install"
-            self.do_run_in_chroot("grub2-install --force %s" % setup.grub_device)
+            self.do_run_in_chroot("grub-install --force %s" % setup.grub_device)
             self.do_configure_grub(our_total, our_current)
             grub_retries = 0
             while (not self.do_check_grub(our_total, our_current)):
@@ -545,8 +545,8 @@ class InstallerEngine:
     def do_configure_grub(self, our_total, our_current):
         self.update_progress(pulse=True, total=our_total, current=our_current, message=_("Configuring bootloader"))
         print " --> Running grub-mkconfig"
-        self.do_run_in_chroot("grub2-mkconfig -o /boot/grub/grub.cfg")
-        grub_output = commands.getoutput("chroot /target/ /bin/sh -c \"grub2-mkconfig -o /boot/grub/grub.cfg\"")
+        self.do_run_in_chroot("grub-mkconfig -o /boot/grub/grub.cfg")
+        grub_output = commands.getoutput("chroot /target/ /bin/sh -c \"grub-mkconfig -o /boot/grub/grub.cfg\"")
         grubfh = open("/var/log/live-installer-grub-output.log", "w")
         grubfh.writelines(grub_output)
         grubfh.close()
