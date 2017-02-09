@@ -36,7 +36,7 @@ class InstallerEngine:
                 name, version = config[n], config[v]
             except (IOError, KeyError): continue
             else: break
-        else: name, version = 'Unknown GNU/Linux', '1.0'
+        else: name, version = 'Gentoo GNU/Linux', '2.3'
         self.distribution_name, self.distribution_version = name, version
         # Set other configuration
         config = _get_config_dict(CONFIG_FILE)
@@ -296,7 +296,7 @@ class InstallerEngine:
         our_current += 1
         self.update_progress(total=our_total, current=our_current, message=_("Adding new user to the system"))
         self.do_run_in_chroot('groupadd -g 20 sudo')
-        self.do_run_in_chroot('useradd -c "{real_name}" -m {username} -G adm,audio,cdrom,floppy,lpadmin,netdev,plugdev,sudo,tape,users,video,wheel'.format(real_name=setup.real_name.replace('"', r'\"'), username=setup.username))
+        self.do_run_in_chroot('useradd -c "{real_name}" -m {username} -G adm,audio,cdrom,floppy,lpadmin,plugdev,sudo,tape,users,video,wheel'.format(real_name=setup.real_name.replace('"', r'\"'), username=setup.username))
 
         fp = open("/target/tmp/.passwd", "w")
         fp.write(setup.password1 + "\n")
@@ -429,7 +429,7 @@ class InstallerEngine:
         reposfh.write("sync-uri = git://github.com/matijaskala/ports-2013.git\n")
         reposfh.write("auto-sync = yes\n\n")
         reposfh.close()
-        self.do_run_in_chroot("git clone git://github.com/matijaskala/ports-2013.git /usr/portage")
+#        self.do_run_in_chroot("git clone git://github.com/matijaskala/ports-2013.git /usr/portage")
         self.do_run_in_chroot("emerge -C live-installer")
 
 #        print " --> Unmerging installer"
