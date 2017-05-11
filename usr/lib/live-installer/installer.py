@@ -419,43 +419,10 @@ class InstallerEngine:
 
         # portage
         print " --> Configuring portage"
+        our_current += 1
         self.update_progress(total=our_total, current=our_current, message=_("Configuring portage"))
-        reposfh = open("/target/etc/portage/repos.conf", "w")
-        reposfh.write("[DEFAULT]\n")
-        reposfh.write("main-repo = gentoo\n\n")
-        reposfh.write("[gentoo]\n")
-        reposfh.write("location = /usr/portage\n")
-        reposfh.write("sync-type = git\n")
-        reposfh.write("sync-uri = git://github.com/matijaskala/ports-2013.git\n")
-        reposfh.write("auto-sync = yes\n\n")
-        reposfh.close()
-#        self.do_run_in_chroot("git clone git://github.com/matijaskala/ports-2013.git /usr/portage")
+        self.do_run_in_chroot("emaint sync -A")
         self.do_run_in_chroot("emerge -C live-installer")
-
-#        print " --> Unmerging installer"
-#        self.update_progress(total=our_total, current=our_current, message=_("Unmerging installer"))
-#        if setup.language != "en_US":
-#            os.system("mkdir -p /target/debs")
-#            language_code = setup.language
-#            if "_" in setup.language:
-#                language_code = setup.language.split("_")[0]
-#            l10ns = commands.getoutput("find /lib/live/mount/medium/pool | grep 'l10n-%s\\|hunspell-%s'" % (language_code, language_code))
-#            for l10n in l10ns.split("\n"):
-#                os.system("cp %s /target/debs/" % l10n)
-#            self.do_run_in_chroot("dpkg -i /debs/*")
-#            os.system("rm -rf /target/debs")
-#
-#        if os.path.exists("/etc/linuxmint/info"):
-#            drivers = commands.getoutput("mint-drivers")
-#            if "broadcom-sta-dkms" in drivers:
-#                try:
-#                    os.system("mkdir -p /target/debs")
-#                    os.system("cp /lib/live/mount/medium/pool/non-free/b/broadcom-sta/*.deb /target/debs/")
-#                    self.do_run_in_chroot("dpkg -i /debs/*")
-#                    self.do_run_in_chroot("modprobe wl")
-#                    os.system("rm -rf /target/debs")
-#                except:
-#                    print "Failed to install Broadcom drivers"
 
         # set the keyboard options..
         print " --> Setting the keyboard"
