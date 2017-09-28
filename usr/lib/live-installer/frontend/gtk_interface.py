@@ -22,7 +22,7 @@ import PIL
 import threading
 import gobject
 import time
-import webkit
+#import webkit
 import string
 import parted
 
@@ -262,22 +262,22 @@ class InstallerWindow:
         #    self.wTree.get_widget("vbox_install").add(browser)
         #    self.wTree.get_widget("vbox_install").show_all()         
         # Initiate the slide show
-        self.slideshow_path = "/usr/share/live-installer/slideshow"
-        if os.path.exists(self.slideshow_path):
-            self.slideshow_browser = webkit.WebView()
-            s = self.slideshow_browser.get_settings()
-            s.set_property('enable-file-access-from-file-uris', True)
-            s.set_property('enable-default-context-menu', False)            
-            self.slideshow_browser.open("file://" + os.path.join(self.slideshow_path, 'template.html'))
-            self.wTree.get_widget("vbox_install").add(self.slideshow_browser)
-            self.wTree.get_widget("vbox_install").show_all()                                                            
+        #self.slideshow_path = "/usr/share/live-installer/slideshow"
+        #if os.path.exists(self.slideshow_path):
+            #self.slideshow_browser = webkit.WebView()
+            #s = self.slideshow_browser.get_settings()
+            #s.set_property('enable-file-access-from-file-uris', True)
+            #s.set_property('enable-default-context-menu', False)            
+            #self.slideshow_browser.open("file://" + os.path.join(self.slideshow_path, 'template.html'))
+            #self.wTree.get_widget("vbox_install").add(self.slideshow_browser)
+            #self.wTree.get_widget("vbox_install").show_all()                                                            
         
-        self.partitions_browser = webkit.WebView()
-        s = self.partitions_browser.get_settings()
-        s.set_property('enable-file-access-from-file-uris', True)
-        s.set_property('enable-default-context-menu', False)
-        self.partitions_browser.set_transparent(True)
-        self.wTree.get_widget("scrolled_partitions").add(self.partitions_browser)
+        #self.partitions_browser = webkit.WebView()
+        #s = self.partitions_browser.get_settings()
+        #s.set_property('enable-file-access-from-file-uris', True)
+        #s.set_property('enable-default-context-menu', False)
+        #self.partitions_browser.set_transparent(True)
+        #self.wTree.get_widget("scrolled_partitions").add(self.partitions_browser)
         
         self.window.show_all()
 
@@ -926,10 +926,10 @@ class InstallerWindow:
         self.critical_error_happened = False
 
         # Now it's time to load the slide show
-        if os.path.exists(self.slideshow_path):
-            slideThr = Slideshow(self.slideshow_browser, self.slideshow_path)
-            slideThr.daemon = True  # let the slide-thread die with the parent
-            slideThr.start()
+        #if os.path.exists(self.slideshow_path):
+            #slideThr = Slideshow(self.slideshow_browser, self.slideshow_path)
+            #slideThr.daemon = True  # let the slide-thread die with the parent
+            #slideThr.start()
 
         # Start installing
         do_try_finish_install = True
