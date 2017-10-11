@@ -406,11 +406,9 @@ class InstallerEngine:
         print " --> Setting the locale"
         our_current += 1
         self.update_progress(total=our_total, current=our_current, message=_("Setting locale"))
-        os.system("echo \"%s.UTF-8 UTF-8\" >> /target/etc/locale.gen" % setup.language)
+        os.system("echo \"%s.UTF-8 UTF-8\" > /target/etc/locale.gen" % setup.language)
         self.do_run_in_chroot("locale-gen")
-        os.system("echo \"\" > /target/etc/default/locale")
-        self.do_run_in_chroot("update-locale LANG=\"%s.UTF-8\"" % setup.language)
-        self.do_run_in_chroot("update-locale LANG=%s.UTF-8" % setup.language)
+        self.do_run_in_chroot("eselect locale set \"%s.UTF-8\"" % setup.language)
 
         # set the timezone
         print " --> Setting the timezone"
@@ -428,23 +426,15 @@ class InstallerEngine:
         print " --> Setting the keyboard"
         our_current += 1
         self.update_progress(total=our_total, current=our_current, message=_("Setting keyboard options"))
-        newconsolefh = open("/target/etc/default/console-setup.new", "w")
-        newconsolefh.write("XKBMODEL=\"%s\"\n" % setup.keyboard_model)
-        newconsolefh.write("XKBLAYOUT=\"%s\"\n" % setup.keyboard_layout)
+        newconsolefh = open("/target/etc/X11/xorg.conf.d/00-keyboard.conf", "w")
+        newconsolefh.write("Section \"InputClass\"\n\tIdentifier \"system-keyboard\"\n\tMatchIsKeyboard \"on\"\n")
+        newconsolefh.write("\tOption \"XkbModel\" \"%s\"\n" % setup.keyboard_model)
+        newconsolefh.write("\tOption \"XkbLayout\" \"%s\"\n" % setup.keyboard_layout)
         if(setup.keyboard_variant is not None):
-            newconsolefh.write("XKBVARIANT=\"%s\"\n" % setup.keyboard_variant)
+            newconsolefh.write("\tOption \"XkbVariant\" \"%s\"\n" % setup.keyboard_variant)
+        newconsolefh.write("EndSection")
         newconsolefh.close()
-        self.do_run_in_chroot("rm -f /etc/default/console-setup")
-        self.do_run_in_chroot("mv /etc/default/console-setup.new /etc/default/console-setup")
-
-        newconsolefh = open("/target/etc/default/keyboard.new", "w")
-        newconsolefh.write("XKBMODEL=\"%s\"\n" % setup.keyboard_model)
-        newconsolefh.write("XKBLAYOUT=\"%s\"\n" % setup.keyboard_layout)
-        if(setup.keyboard_variant is not None):
-            newconsolefh.write("XKBVARIANT=\"%s\"\n" % setup.keyboard_variant)
-        newconsolefh.close()
-        self.do_run_in_chroot("rm -f /etc/default/keyboard")
-        self.do_run_in_chroot("mv /etc/default/keyboard.new /etc/default/keyboard")
+        os.system("cp /mnt/livecd/etc/conf.d/keymaps /target/etc/conf.d/keymaps")
 
         # Perform OS adjustments (this is needed prior to installing grub)
         if os.path.exists("/target/usr/lib/linuxmint/mintSystem/mint-adjust.py"):
