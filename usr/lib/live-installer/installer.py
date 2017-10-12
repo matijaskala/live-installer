@@ -408,7 +408,7 @@ class InstallerEngine:
         self.update_progress(total=our_total, current=our_current, message=_("Setting locale"))
         os.system("echo \"%s.UTF-8 UTF-8\" > /target/etc/locale.gen" % setup.language)
         self.do_run_in_chroot("locale-gen")
-        self.do_run_in_chroot("eselect locale set \"%s.UTF-8\"" % setup.language)
+        self.do_run_in_chroot("eselect locale set \"%s.utf8\"" % setup.language)
 
         # set the timezone
         print " --> Setting the timezone"
@@ -434,7 +434,49 @@ class InstallerEngine:
             newconsolefh.write("\tOption \"XkbVariant\" \"%s\"\n" % setup.keyboard_variant)
         newconsolefh.write("EndSection")
         newconsolefh.close()
-        os.system("cp /mnt/livecd/etc/conf.d/keymaps /target/etc/conf.d/keymaps")
+
+        keymaps = {
+            "ar_EG": "arabic",
+            "ast_ES": "es",
+            "ca_ES": "es",
+            "cs_CZ": "cz-us-qwertz",
+            "da_DK": "dk",
+            "de_BE": "be-latin1",
+            "de_DE": "de-latin1-nodeadkeys",
+            "el_GR": "gr",
+            "en_GB": "uk",
+            "en_US": "us",
+            "es_ES": "es",
+            "et_EE": "et",
+            "fi_FI": "fi-latin1",
+            "fr_FR": "fr-latin1",
+            "fr_BE": "be-latin1",
+            "gl_ES": "es",
+            "hr_HR": "croat",
+            "hu_HU": "hu",
+            "it_IT": "it",
+            "ja_JP": "jp106",
+            "km_KH": "khmer",
+            "ko_KR": "korean",
+            "lt_LT": "lt.baltic",
+            "nb_NO": "no-latin1",
+            "nl_BE": "be-latin1",
+            "nn_NO": "no-latin1",
+            "pl_PL": "Pl02",
+            "pt_BR": "br-abnt2",
+            "pt_PT": "pt-latin1",
+            "ru_RU": "ruwin_alt-UTF-8",
+            "sk_SK": "sk-qwertz",
+            "sl_SI": "slovene",
+            "sr_RS": "sr-cy",
+            "sv_SE": "sv-latin1",
+            "tg_TJ": "tj",
+            "tr_TR": "trq",
+            "uk_UA": "ua",
+            "wa_BE": "be-latin1",
+        }
+        if setup.language in keymaps:
+            newconsolefh.write("sed -i 's/keymap=.*/keymap=\"%s\"/' /etc/conf.d/keymaps" % keymaps[setup.language])
 
         # Perform OS adjustments (this is needed prior to installing grub)
         if os.path.exists("/target/usr/lib/linuxmint/mintSystem/mint-adjust.py"):
