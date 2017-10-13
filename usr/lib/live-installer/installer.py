@@ -476,7 +476,7 @@ class InstallerEngine:
             "wa_BE": "be-latin1",
         }
         if setup.language in keymaps:
-            newconsolefh.write("sed -i 's/keymap=.*/keymap=\"%s\"/' /etc/conf.d/keymaps" % keymaps[setup.language])
+            self.do_run_in_chroot("sed -i 's/keymap=.*/keymap=\"%s\"/' /etc/conf.d/keymaps" % keymaps[setup.language])
 
         # Perform OS adjustments (this is needed prior to installing grub)
         if os.path.exists("/target/usr/lib/linuxmint/mintSystem/mint-adjust.py"):
