@@ -406,7 +406,8 @@ class InstallerEngine:
         print " --> Setting the locale"
         our_current += 1
         self.update_progress(total=our_total, current=our_current, message=_("Setting locale"))
-        os.system("echo \"%s.UTF-8 UTF-8\" > /target/etc/locale.gen" % setup.language)
+        os.system("sed -i '/^[^#]/d' /target/etc/locale.gen")
+        os.system("grep '%s' /usr/share/i18n/SUPPORTED >> /target/etc/locale.gen" % setup.language)
         self.do_run_in_chroot("locale-gen")
         self.do_run_in_chroot("eselect locale set \"%s.utf8\"" % setup.language)
 
