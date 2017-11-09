@@ -107,27 +107,28 @@ def add_partition_dialog(widget, path, viewcol):
     if partition.partition.number != -1:
         return
     dlg = AddDialog(partition.partition)
-    dlg.run()
+    if dlg.run() != gtk.RESPONSE_OK:
+        return
     if dlg.at_end:
         start = dlg.end - dlg.length()
     else:
         start = dlg.start
     device = partition.partition.geometry.device
     part_geometry = parted.Geometry(device, start * 1024**2 / device.sectorSize, dlg.size_mib * 1024**2 / device.sectorSize)
-    new_partition = Partition(parted.Partition(disk=partition.partition.disk, type=dlg.part_type, geometry=part_geometry),
-                              partition.partition.disk.device.optimalAlignedConstraint)
+    new_partition = Partition(parted.Partition(disk=partition.partition.disk, type=dlg.part_type, geometry=part_geometry))
+    partition.partition.disk.addPartition(new_partition.partition, partition.partition.disk.device.optimalAlignedConstraint)
     for flag in dlg.part_flags:
         new_partition.setFlag(flag)
     model = installer.wTree.get_widget("treeview_disks").get_model()
     iter_to_insert = (new_partition.name, '<span foreground="{}">{}</span>'.format(partition.color, partition.type), new_partition.description,
-                      partition.format_as, partition.mount_as, partition.size, partition.size, partition, disk.path)
+                      partition.format_as, partition.mount_as, partition.size, partition.size, partition, partition.partition.disk.device.path)
     for disk in model:
         part_iter = None
         for part in disk.iterchildren():
             if partition == part[IDX_PART_OBJECT]:
                 part_iter = partition
         if part_iter:
-            if dlg.at_end():
+            if dlg.at_end:
                 model.insert_after(disk, part_iter, iter_to_insert)
             else:
                 model.insert_before(disk, part_iter, iter_to_insert)
@@ -603,6 +604,7 @@ class AddDialog(object):
         self.glade = RESOURCE_DIR + 'interface.glade'
         self.dTree = gtk.glade.XML(self.glade, 'add_dialog')
         self.window = self.dTree.get_widget("add_dialog")
+        self.window.add_buttons("gtk-ok", gtk.RESPONSE_OK, "gtk-cancel", gtk.RESPONSE_CANCEL)
         self.window.set_title(_("Add partition"))
         self.start = partition.geometry.start * partition.geometry.device.sectorSize / 1024**2 + 1
         self.end = partition.geometry.end * partition.geometry.device.sectorSize / 1024**2
@@ -610,7 +612,7 @@ class AddDialog(object):
         if partition.type == parted.PARTITION_RAID:
             self.part_type = parted.PARTITION_LOGICAL
         elif self.disk_type == 'gpt':
-            dTree.get_widget("add_combobox_type").get_model().append(['BIOS_GRUB'])
+            self.dTree.get_widget("add_combobox_type").get_model().append(['BIOS_GRUB'])
             self.dTree.get_widget("add_label_type").show()
             self.dTree.get_widget("add_combobox_type").show()
             self.dTree.get_widget("add_combobox_type").set_active(0)
@@ -621,7 +623,7 @@ class AddDialog(object):
             ])
             self.part_type = parted.PARTITION_NORMAL
         elif self.disk_type == 'msdos':
-            dTree.get_widget("add_combobox_type").get_model().append(['Extended'])
+            self.dTree.get_widget("add_combobox_type").get_model().append(['Extended'])
             self.dTree.get_widget("add_label_type").show()
             self.dTree.get_widget("add_combobox_type").show()
             self.dTree.get_widget("add_combobox_type").set_active(0)
@@ -640,7 +642,7 @@ class AddDialog(object):
         self.dTree.get_widget("add_spinbutton_size").set_increments(100, 100)
 
     def run(self):
-        self.window.run()
+        ret = self.window.run()
         self.window.hide()
         w = self.dTree.get_widget("add_combobox_use_as")
         self.format_as = w.get_model()[w.get_active()][0]
@@ -656,3 +658,4 @@ class AddDialog(object):
             self.mount_as = ''
             self.size_mib = 1
             self.part_flags.append(parted.PARTITION_BIOS_GRUB)
+        return ret
