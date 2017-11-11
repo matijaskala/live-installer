@@ -120,8 +120,8 @@ def add_partition_dialog(widget, path, viewcol):
     for flag in dlg.part_flags:
         new_partition.setFlag(flag)
     model = installer.wTree.get_widget("treeview_disks").get_model()
-    iter_to_insert = (new_partition.name, '<span foreground="{}">{}</span>'.format(partition.color, partition.type), new_partition.description,
-                      partition.format_as, partition.mount_as, partition.size, partition.size, partition, partition.partition.disk.device.path)
+    iter_to_insert = (new_partition.partition.path, '<span foreground="{}">{}</span>'.format(new_partition.color, new_partition.type), new_partition.description,
+                      new_partition.format_as, new_partition.mount_as, new_partition.size, new_partition.size, new_partition, partition.partition.disk.device.path)
     for disk in model:
         part_iter = None
         for part in disk.iterchildren():
@@ -129,9 +129,9 @@ def add_partition_dialog(widget, path, viewcol):
                 part_iter = partition
         if part_iter:
             if dlg.at_end:
-                model.insert_after(disk, part_iter, iter_to_insert)
+                model.insert_after(model.iter_parent(iter), iter, iter_to_insert)
             else:
-                model.insert_before(disk, part_iter, iter_to_insert)
+                model.insert_before(model.iter_parent(iter), iter, iter_to_insert)
     installer.setup.partitions.append(new_partition)
     installer.setup.partitions = sorted(installer.setup.partitions, key=lambda part: part.partition.geometry.start)
     assign_mount_point(new_partition, dlg.mount_as, dlg.format_as)
