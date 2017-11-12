@@ -110,7 +110,7 @@ def add_partition_dialog(widget, path, viewcol):
     if dlg.run() != gtk.RESPONSE_OK:
         return
     if dlg.at_end:
-        start = dlg.end - dlg.length()
+        start = dlg.end - dlg.size_mib
     else:
         start = dlg.start
     device = partition.partition.geometry.device
@@ -122,16 +122,24 @@ def add_partition_dialog(widget, path, viewcol):
     model = installer.wTree.get_widget("treeview_disks").get_model()
     iter_to_insert = (new_partition.partition.path, '<span foreground="{}">{}</span>'.format(new_partition.color, new_partition.type), new_partition.description,
                       new_partition.format_as, new_partition.mount_as, new_partition.size, new_partition.size, new_partition, partition.partition.disk.device.path)
-    for disk in model:
-        part_iter = None
-        for part in disk.iterchildren():
-            if partition == part[IDX_PART_OBJECT]:
-                part_iter = partition
-        if part_iter:
-            if dlg.at_end:
-                model.insert_after(model.iter_parent(iter), iter, iter_to_insert)
-            else:
-                model.insert_before(model.iter_parent(iter), iter, iter_to_insert)
+    update_geometry = False
+    if dlg_at_end:
+        model.insert_after(model.iter_parent(iter), iter, iter_to_insert)
+        if partition.partition.geometry.start < new_partition.partition.geometry.start - 1024**2 / device.sectorSize:
+            partition.partition.geometry.end = new_partition.partition.geometry.start - 1
+            update_geometry = True
+    else:
+        model.insert_before(model.iter_parent(iter), iter, iter_to_insert)
+        if partition.partition.geometry.end > new_partition.partition.geometry.end + 1024**2 / device.sectorSize:
+            partition.partition.geometry.start = new_partition.partition.geometry.end + 1
+            update_geometry = False
+    if update_geometry:
+        partition.length = partition.partition.getLength()
+        partition.size = to_human_readable(partition.partition.getLength('B'))
+        row[IDX_PART_SIZE] = partition.size
+    else:
+        model.remove(iter)
+        installer.setup.partitions.remove(partition)
     installer.setup.partitions.append(new_partition)
     installer.setup.partitions = sorted(installer.setup.partitions, key=lambda part: part.partition.geometry.start)
     assign_mount_point(new_partition, dlg.mount_as, dlg.format_as)
@@ -155,7 +163,7 @@ def remove_partition_dialog(widget, path, viewcol):
             if partition == part[IDX_PART_OBJECT]:
                 part_iter = partition
         if part_iter:
-            model.remove(part_iter)
+            model.remove(iter)
     installer.setup.partitions.remove(partition)
 
 def assign_mount_point(partition, mount_point, filesystem):
@@ -187,6 +195,13 @@ def partitions_popup_menu(widget, event):
     if (partition.partition.type == parted.PARTITION_EXTENDED or
         partition.partition.number == -1 or
         "swap" in partition_type):
+        return
+    if (partition.partition.number == -1):
+        menu = gtk.Menu()
+        menuItem = gtk.MenuItem(_("Edit"))
+        menuItem.connect("activate", edit_partition_dialog, None, None)
+        menu.show_all()
+        menu.popup(None, None, None, event.button, event.time)
         return
     menu = gtk.Menu()
     menuItem = gtk.MenuItem(_("Edit"))
