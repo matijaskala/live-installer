@@ -652,10 +652,22 @@ class AddDialog(object):
             self.part_type = parted.PARTITION_NORMAL
         self.part_flags = []
         self.dTree.get_widget("add_combobox_location").set_active(0)
-        self.dTree.get_widget("add_combobox_use_as").set_active(0)
         self.dTree.get_widget("add_spinbutton_size").set_range(1, self.end - self.start)
         self.dTree.get_widget("add_spinbutton_size").set_value(self.end - self.start)
         self.dTree.get_widget("add_spinbutton_size").set_increments(100, 100)
+        # Build supported filesystems list
+        filesystems = sorted(['swap'] +
+                             [fs[11:] for fs in getoutput('echo /sbin/mkfs.*').split()],
+                             key=lambda x: 0 if x in ('', 'ext4') else 1 if x == 'swap' else 2)
+        model = gtk.ListStore(str)
+        for i in filesystems: model.append([i])
+        self.dTree.get_widget("add_combobox_use_as").set_model(model)
+        self.dTree.get_widget("add_combobox_use_as").set_active(filesystems.index(format_as))
+        # Build list of pre-provided mountpoints
+        model = gtk.ListStore(str)
+        for i in " / /home /boot /boot/efi /srv /tmp swap".split(' '):
+            model.append([i])
+        self.dTree.get_widget("add_comboboxentry_mount_point").set_model(model)
 
     def run(self):
         ret = self.window.run()
