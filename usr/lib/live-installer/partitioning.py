@@ -123,7 +123,7 @@ def add_partition_dialog(widget, path, viewcol):
     iter_to_insert = (new_partition.partition.path, '<span foreground="{}">{}</span>'.format(new_partition.color, new_partition.type), new_partition.description,
                       new_partition.format_as, new_partition.mount_as, new_partition.size, new_partition.size, new_partition, partition.partition.disk.device.path)
     update_geometry = False
-    if dlg_at_end:
+    if dlg.at_end:
         model.insert_after(model.iter_parent(iter), iter, iter_to_insert)
         if partition.partition.geometry.start < new_partition.partition.geometry.start - 1024**2 / device.sectorSize:
             partition.partition.geometry.end = new_partition.partition.geometry.start - 1
@@ -132,7 +132,7 @@ def add_partition_dialog(widget, path, viewcol):
         model.insert_before(model.iter_parent(iter), iter, iter_to_insert)
         if partition.partition.geometry.end > new_partition.partition.geometry.end + 1024**2 / device.sectorSize:
             partition.partition.geometry.start = new_partition.partition.geometry.end + 1
-            update_geometry = False
+            update_geometry = True
     if update_geometry:
         partition.length = partition.partition.getLength()
         partition.size = to_human_readable(partition.partition.getLength('B'))
@@ -198,8 +198,9 @@ def partitions_popup_menu(widget, event):
         return
     if (partition.partition.number == -1):
         menu = gtk.Menu()
-        menuItem = gtk.MenuItem(_("Edit"))
-        menuItem.connect("activate", edit_partition_dialog, None, None)
+        menuItem = gtk.MenuItem(_("Add"))
+        menuItem.connect("activate", add_partition_dialog, None, None)
+        menu.append(menuItem)
         menu.show_all()
         menu.popup(None, None, None, event.button, event.time)
         return
