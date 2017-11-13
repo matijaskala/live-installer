@@ -155,16 +155,16 @@ def remove_partition_dialog(widget, path, viewcol):
     from frontend.gtk_interface import QuestionDialog
     dialog = QuestionDialog("Remove partition", "Are you sure you want to remove %s? THIS OPERATION CANNOT BE UNDONE." % partition.partition.path)
     if not dialog: return
+    new_partition = Partition(parted.Partition(disk=partition.partition.disk, type=parted.PARTITION_FREESPACE, geometry=partition.partition.geometry))
+    iter_to_insert = (new_partition.partition.path, '<span foreground="{}">{}</span>'.format(new_partition.color, new_partition.type), new_partition.description,
+                      new_partition.format_as, new_partition.mount_as, new_partition.size, new_partition.size, new_partition, partition.partition.disk.device.path)
+    model.insert_before(model.iter_parent(iter), iter, iter_to_insert)
+    installer.setup.partitions.append(new_partition)
     partition.partition.disk.removePartition(partition.partition)
     model = installer.wTree.get_widget("treeview_disks").get_model()
-    for disk in model:
-        part_iter = None
-        for part in disk.iterchildren():
-            if partition == part[IDX_PART_OBJECT]:
-                part_iter = partition
-        if part_iter:
-            model.remove(iter)
+    model.remove(iter)
     installer.setup.partitions.remove(partition)
+    installer.setup.partitions = sorted(installer.setup.partitions, key=lambda part: part.partition.geometry.start)
 
 def assign_mount_point(partition, mount_point, filesystem):
     # Assign it in the treeview
