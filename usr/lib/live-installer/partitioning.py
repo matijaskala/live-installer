@@ -156,8 +156,8 @@ def remove_partition_dialog(widget, path, viewcol):
     dialog = QuestionDialog("Remove partition", "Are you sure you want to remove %s? THIS OPERATION CANNOT BE UNDONE." % partition.partition.path)
     if not dialog: return
     new_partition = Partition(parted.Partition(disk=partition.partition.disk, type=parted.PARTITION_FREESPACE, geometry=partition.partition.geometry))
-    iter_to_insert = (new_partition.partition.path, '<span foreground="{}">{}</span>'.format(new_partition.color, new_partition.type), new_partition.description,
-                      new_partition.format_as, new_partition.mount_as, new_partition.size, new_partition.size, new_partition, partition.partition.disk.device.path)
+    iter_to_insert = ('', '<span foreground="{}">{}</span>'.format(new_partition.color, new_partition.type), '',
+                      '', '', new_partition.size, '', new_partition, partition.partition.disk.device.path)
     model.insert_before(model.iter_parent(iter), iter, iter_to_insert)
     installer.setup.partitions.append(new_partition)
     partition.partition.disk.removePartition(partition.partition)
@@ -662,7 +662,7 @@ class AddDialog(object):
         model = gtk.ListStore(str)
         for i in filesystems: model.append([i])
         self.dTree.get_widget("add_combobox_use_as").set_model(model)
-        self.dTree.get_widget("add_combobox_use_as").set_active(filesystems.index(format_as))
+        self.dTree.get_widget("add_combobox_use_as").set_active(filesystems.index('ext4'))
         # Build list of pre-provided mountpoints
         model = gtk.ListStore(str)
         for i in " / /home /boot /boot/efi /srv /tmp swap".split(' '):
