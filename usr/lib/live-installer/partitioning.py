@@ -186,7 +186,6 @@ def remove_partition_dialog(widget, path, viewcol):
         model.insert_before(model.iter_parent(iter), iter, iter_to_insert)
         installer.setup.partitions.append(new_partition)
     partition.partition.disk.removePartition(partition.partition)
-    model = installer.wTree.get_widget("treeview_disks").get_model()
     model.remove(iter)
     installer.setup.partitions.remove(partition)
     installer.setup.partitions = sorted(installer.setup.partitions, key=lambda part: part.partition.geometry.start)
