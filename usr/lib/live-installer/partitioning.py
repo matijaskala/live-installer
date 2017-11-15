@@ -156,7 +156,9 @@ def remove_partition_dialog(widget, path, viewcol):
     from frontend.gtk_interface import QuestionDialog
     dialog = QuestionDialog("Remove partition", "Are you sure you want to remove %s? THIS OPERATION CANNOT BE UNDONE." % partition.partition.path)
     if not dialog: return
-    if model.iter_prev(iter) != None and mode[mode.iter_prev(iter)][IDX_PART_OBJECT].partition.number == -1:
+    prev_path = list(model.get_path(iter))
+    prev_path[-1] -= 1
+    if prev_path[-1] != -1 and mode[mode.get_iter(tuple(prev_path))][IDX_PART_OBJECT].partition.number == -1:
         TODO_SOMETHING = True
     elif model.iter_next(iter) != None and mode[mode.iter_next(iter)][IDX_PART_OBJECT].partition.number == -1:
         TODO_SOMETHING = True
