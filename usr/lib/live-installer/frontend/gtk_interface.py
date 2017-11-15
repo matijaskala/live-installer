@@ -163,6 +163,9 @@ class InstallerWindow:
         self.wTree.get_widget("event_timezones").connect('button-release-event', timezones.cb_map_clicked, model)
 
         # partitions
+        self.wTree.get_widget("button_add_partition").set_label(_("Add"))
+        self.wTree.get_widget("button_edit_partition").set_label(_("Edit"))
+        self.wTree.get_widget("button_remove_partition").set_label(_("Remove"))
         self.wTree.get_widget("button_edit").set_label(_("Edit partitions"))
         self.wTree.get_widget("button_refresh").set_label(_("Refresh"))
         self.wTree.get_widget("button_custommount").set_label(_("Expert mode"))
