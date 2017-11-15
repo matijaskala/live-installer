@@ -207,15 +207,24 @@ def assign_mount_point(partition, mount_point, filesystem):
     installer.setup.print_setup()
 
 def partitions_popup_menu(widget, event):
-    if event.button != 3: return
+    installer.wTree.get_widget("button_add_partition").set_sensitive(False)
+    installer.wTree.get_widget("button_edit_partition").set_sensitive(False)
+    installer.wTree.get_widget("button_remove_partition").set_sensitive(False)
     model, iter = installer.wTree.get_widget("treeview_disks").get_selection().get_selected()
     if not iter: return
     partition = model.get_value(iter, IDX_PART_OBJECT)
     if not partition: return
     partition_type = model.get_value(iter, IDX_PART_TYPE)
     if (partition.partition.type == parted.PARTITION_EXTENDED or
-        partition.partition.number == -1 or
         "swap" in partition_type):
+        return
+    if (partition.partition.number == -1):
+        installer.wTree.get_widget("button_add_partition").set_sensitive(True)
+        return
+    else:
+        installer.wTree.get_widget("button_edit_partition").set_sensitive(True)
+        installer.wTree.get_widget("button_remove_partition").set_sensitive(True)
+    if event.button != 3:
         return
     if (partition.partition.number == -1):
         menu = gtk.Menu()
