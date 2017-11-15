@@ -158,9 +158,9 @@ def remove_partition_dialog(widget, path, viewcol):
     if not dialog: return
     prev_path = list(model.get_path(iter))
     prev_path[-1] -= 1
-    if prev_path[-1] != -1 and mode[mode.get_iter(tuple(prev_path))][IDX_PART_OBJECT].partition.number == -1:
+    if prev_path[-1] != -1 and model[model.get_iter(tuple(prev_path))][IDX_PART_OBJECT].partition.number == -1:
         TODO_SOMETHING = True
-    elif model.iter_next(iter) != None and mode[mode.iter_next(iter)][IDX_PART_OBJECT].partition.number == -1:
+    elif model.iter_next(iter) != None and model[model.iter_next(iter)][IDX_PART_OBJECT].partition.number == -1:
         TODO_SOMETHING = True
     else:
         new_partition = Partition(parted.Partition(disk=partition.partition.disk, type=parted.PARTITION_FREESPACE, geometry=partition.partition.geometry))
