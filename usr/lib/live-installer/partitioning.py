@@ -159,9 +159,26 @@ def remove_partition_dialog(widget, path, viewcol):
     prev_path = list(model.get_path(iter))
     prev_path[-1] -= 1
     if prev_path[-1] != -1 and model[model.get_iter(tuple(prev_path))][IDX_PART_OBJECT].partition.number == -1:
-        TODO_SOMETHING = True
+        prev_free = model[model.get_iter(tuple(prev_path))]
+        if model.iter_next(iter) != None and model[model.iter_next(iter)][IDX_PART_OBJECT].partition.number == -1:
+            next_free = model[model.iter_next(iter)]
+            prev_free[IDX_PART_OBJECT].partition.geometry.end = next_free[IDX_PART_OBJECT].partition.geometry.end
+            prev_free[IDX_PART_OBJECT].length = prev_free[IDX_PART_OBJECT].partition.getLength()
+            prev_free[IDX_PART_OBJECT].size = to_human_readable(prev_free[IDX_PART_OBJECT].partition.getLength('B'))
+            prev_free[IDX_PART_SIZE] = prev_free[IDX_PART_OBJECT].size
+            model.remove(model.next_iter(iter))
+            installer.setup.partitions.remove(next_free[IDX_PART_OBJECT])
+        else:
+            prev_free[IDX_PART_OBJECT].partition.geometry.end = partition.partition.geometry.end
+            prev_free[IDX_PART_OBJECT].length = prev_free[IDX_PART_OBJECT].partition.getLength()
+            prev_free[IDX_PART_OBJECT].size = to_human_readable(prev_free[IDX_PART_OBJECT].partition.getLength('B'))
+            prev_free[IDX_PART_SIZE] = prev_free[IDX_PART_OBJECT].size
     elif model.iter_next(iter) != None and model[model.iter_next(iter)][IDX_PART_OBJECT].partition.number == -1:
-        TODO_SOMETHING = True
+        next_free = model[model.iter_next(iter)]
+        next_free[IDX_PART_OBJECT].partition.geometry.start = partition.partition.geometry.start
+        next_free[IDX_PART_OBJECT].length = next_free[IDX_PART_OBJECT].partition.getLength()
+        next_free[IDX_PART_OBJECT].size = to_human_readable(next_free[IDX_PART_OBJECT].partition.getLength('B'))
+        next_free[IDX_PART_SIZE] = next_free[IDX_PART_OBJECT].size
     else:
         new_partition = Partition(parted.Partition(disk=partition.partition.disk, type=parted.PARTITION_FREESPACE, geometry=partition.partition.geometry))
         iter_to_insert = ('', '<span foreground="{}">{}</span>'.format(new_partition.color, new_partition.type), '',
