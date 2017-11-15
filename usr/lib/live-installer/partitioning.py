@@ -115,8 +115,9 @@ def add_partition_dialog(widget, path, viewcol):
         start = dlg.start
     device = partition.partition.geometry.device
     part_geometry = parted.Geometry(device, start * 1024**2 / device.sectorSize, dlg.size_mib * 1024**2 / device.sectorSize)
-    new_partition = Partition(parted.Partition(disk=partition.partition.disk, type=dlg.part_type, geometry=part_geometry))
-    partition.partition.disk.addPartition(new_partition.partition, partition.partition.disk.device.optimalAlignedConstraint)
+    parted_partition = parted.Partition(disk=partition.partition.disk, type=dlg.part_type, geometry=part_geometry)
+    partition.partition.disk.addPartition(parted_partition, partition.partition.disk.device.optimalAlignedConstraint)
+    new_partition = Partition(parted_partition)
     for flag in dlg.part_flags:
         new_partition.setFlag(flag)
     model = installer.wTree.get_widget("treeview_disks").get_model()
