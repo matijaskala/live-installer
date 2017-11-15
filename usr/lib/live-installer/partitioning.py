@@ -163,16 +163,13 @@ def remove_partition_dialog(widget, path, viewcol):
         if model.iter_next(iter) != None and model[model.iter_next(iter)][IDX_PART_OBJECT].partition.number == -1:
             next_free = model[model.iter_next(iter)]
             prev_free[IDX_PART_OBJECT].partition.geometry.end = next_free[IDX_PART_OBJECT].partition.geometry.end
-            prev_free[IDX_PART_OBJECT].length = prev_free[IDX_PART_OBJECT].partition.getLength()
-            prev_free[IDX_PART_OBJECT].size = to_human_readable(prev_free[IDX_PART_OBJECT].partition.getLength('B'))
-            prev_free[IDX_PART_SIZE] = prev_free[IDX_PART_OBJECT].size
-            model.remove(model.iter_next(iter))
             installer.setup.partitions.remove(next_free[IDX_PART_OBJECT])
+            model.remove(model.iter_next(iter))
         else:
             prev_free[IDX_PART_OBJECT].partition.geometry.end = partition.partition.geometry.end
-            prev_free[IDX_PART_OBJECT].length = prev_free[IDX_PART_OBJECT].partition.getLength()
-            prev_free[IDX_PART_OBJECT].size = to_human_readable(prev_free[IDX_PART_OBJECT].partition.getLength('B'))
-            prev_free[IDX_PART_SIZE] = prev_free[IDX_PART_OBJECT].size
+        prev_free[IDX_PART_OBJECT].length = prev_free[IDX_PART_OBJECT].partition.getLength()
+        prev_free[IDX_PART_OBJECT].size = to_human_readable(prev_free[IDX_PART_OBJECT].partition.getLength('B'))
+        prev_free[IDX_PART_SIZE] = prev_free[IDX_PART_OBJECT].size
     elif model.iter_next(iter) != None and model[model.iter_next(iter)][IDX_PART_OBJECT].partition.number == -1:
         next_free = model[model.iter_next(iter)]
         next_free[IDX_PART_OBJECT].partition.geometry.start = partition.partition.geometry.start
