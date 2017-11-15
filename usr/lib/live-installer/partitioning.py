@@ -155,11 +155,16 @@ def remove_partition_dialog(widget, path, viewcol):
     from frontend.gtk_interface import QuestionDialog
     dialog = QuestionDialog("Remove partition", "Are you sure you want to remove %s? THIS OPERATION CANNOT BE UNDONE." % partition.partition.path)
     if not dialog: return
-    new_partition = Partition(parted.Partition(disk=partition.partition.disk, type=parted.PARTITION_FREESPACE, geometry=partition.partition.geometry))
-    iter_to_insert = ('', '<span foreground="{}">{}</span>'.format(new_partition.color, new_partition.type), '',
-                      '', '', new_partition.size, '', new_partition, partition.partition.disk.device.path)
-    model.insert_before(model.iter_parent(iter), iter, iter_to_insert)
-    installer.setup.partitions.append(new_partition)
+    if model.iter_prev(iter) != None and mode[mode.iter_prev(iter)][IDX_PART_OBJECT].partition.number == -1:
+        TODO_SOMETHING = True
+    elif model.iter_next(iter) != None and mode[mode.iter_next(iter)][IDX_PART_OBJECT].partition.number == -1:
+        TODO_SOMETHING = True
+    else:
+        new_partition = Partition(parted.Partition(disk=partition.partition.disk, type=parted.PARTITION_FREESPACE, geometry=partition.partition.geometry))
+        iter_to_insert = ('', '<span foreground="{}">{}</span>'.format(new_partition.color, new_partition.type), '',
+                          '', '', new_partition.size, '', new_partition, partition.partition.disk.device.path)
+        model.insert_before(model.iter_parent(iter), iter, iter_to_insert)
+        installer.setup.partitions.append(new_partition)
     partition.partition.disk.removePartition(partition.partition)
     model = installer.wTree.get_widget("treeview_disks").get_model()
     model.remove(iter)
