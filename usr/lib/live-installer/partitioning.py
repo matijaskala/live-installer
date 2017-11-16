@@ -117,9 +117,9 @@ def add_partition_dialog(widget, path, viewcol):
     part_geometry = parted.Geometry(device, start * 1024**2 / device.sectorSize, dlg.size_mib * 1024**2 / device.sectorSize)
     parted_partition = parted.Partition(disk=partition.partition.disk, type=dlg.part_type, geometry=part_geometry)
     partition.partition.disk.addPartition(parted_partition, partition.partition.disk.device.optimalAlignedConstraint)
-    new_partition = Partition(parted_partition)
+    new_partition = Partition(parted_partition, True)
     for flag in dlg.part_flags:
-        new_partition.setFlag(flag)
+        new_partition.partition.setFlag(flag)
     model = installer.wTree.get_widget("treeview_disks").get_model()
     iter_to_insert = (new_partition.partition.path, '<span foreground="{}">{}</span>'.format(new_partition.color, new_partition.type), new_partition.description,
                       new_partition.format_as, new_partition.mount_as, new_partition.size, new_partition.size, new_partition, partition.partition.disk.device.path)
@@ -468,7 +468,7 @@ class Partition(object):
     format_as = ''
     mount_as = ''
 
-    def __init__(self, partition):
+    def __init__(self, partition, is_new = False):
         assert partition.type not in (parted.PARTITION_METADATA, parted.PARTITION_EXTENDED)
 
         print "              -> Building partition object for %s" % partition.path
@@ -515,6 +515,10 @@ class Partition(object):
 
         if "swap" in self.type:
             self.mount_as = SWAP_MOUNT_POINT
+
+        if is_new:
+            self.color, self.os_fs_info, self.description, self.free_space, self.used_percent = '#a9a9a9', ': '+self.type, '', '', 0
+            return
 
         # identify partition's description and used space
         try:
