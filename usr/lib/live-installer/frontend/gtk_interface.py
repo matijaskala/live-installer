@@ -709,6 +709,7 @@ class InstallerWindow:
         self.wTree.get_widget("help_label").set_markup("<big><b>%s</b></big>" % help_text)
         self.wTree.get_widget("help_icon").set_from_file("/usr/share/live-installer/icons/%s" % self.wizard_pages[index].icon)
         self.wTree.get_widget("notebook1").set_current_page(index)
+        self.wTree.get_widget("button_back").set_sensitive(index != self.PAGE_LANGUAGE)
         # TODO: move other page-depended actions from the wizard_cb into here below
         if index == self.PAGE_PARTITIONS:
             self.setup.skip_mount = False
