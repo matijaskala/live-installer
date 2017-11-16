@@ -627,6 +627,7 @@ End of this space</property>
                             <property name="label" translatable="yes">button</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="sensitive">False</property>
                             <property name="receives_default">True</property>
                           </widget>
                           <packing>
@@ -640,6 +641,7 @@ End of this space</property>
                             <property name="label" translatable="yes">button</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="sensitive">False</property>
                             <property name="receives_default">True</property>
                           </widget>
                           <packing>
@@ -653,6 +655,7 @@ End of this space</property>
                             <property name="label" translatable="yes">button</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="sensitive">False</property>
                             <property name="receives_default">True</property>
                           </widget>
                           <packing>
