@@ -144,6 +144,9 @@ def add_partition_dialog(widget, path, viewcol):
     installer.setup.partitions.append(new_partition)
     installer.setup.partitions = sorted(installer.setup.partitions, key=lambda part: part.partition.geometry.start)
     assign_mount_point(new_partition, dlg.mount_as, dlg.format_as)
+    installer.wTree.get_widget("button_add_partition").set_sensitive(False)
+    installer.wTree.get_widget("button_edit_partition").set_sensitive(False)
+    installer.wTree.get_widget("button_remove_partition").set_sensitive(False)
 
 def remove_partition_dialog(widget, path, viewcol):
     model, iter = installer.wTree.get_widget("treeview_disks").get_selection().get_selected()
@@ -186,6 +189,9 @@ def remove_partition_dialog(widget, path, viewcol):
     model.remove(iter)
     installer.setup.partitions.remove(partition)
     installer.setup.partitions = sorted(installer.setup.partitions, key=lambda part: part.partition.geometry.start)
+    installer.wTree.get_widget("button_add_partition").set_sensitive(False)
+    installer.wTree.get_widget("button_edit_partition").set_sensitive(False)
+    installer.wTree.get_widget("button_remove_partition").set_sensitive(False)
 
 def assign_mount_point(partition, mount_point, filesystem):
     # Assign it in the treeview
@@ -220,7 +226,6 @@ def partitions_popup_menu(widget, event):
         return
     if (partition.partition.number == -1):
         installer.wTree.get_widget("button_add_partition").set_sensitive(True)
-        return
     else:
         installer.wTree.get_widget("button_edit_partition").set_sensitive(True)
         installer.wTree.get_widget("button_remove_partition").set_sensitive(True)
@@ -237,6 +242,9 @@ def partitions_popup_menu(widget, event):
     menu = gtk.Menu()
     menuItem = gtk.MenuItem(_("Edit"))
     menuItem.connect("activate", edit_partition_dialog, None, None)
+    menu.append(menuItem)
+    menuItem = gtk.MenuItem(_("Remove"))
+    menuItem.connect("activate", remove_partition_dialog, None, None)
     menu.append(menuItem)
     menuItem = gtk.SeparatorMenuItem()
     menu.append(menuItem)
