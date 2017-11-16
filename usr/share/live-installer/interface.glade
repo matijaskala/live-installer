@@ -2060,6 +2060,7 @@ End of this space</property>
                 <property name="label">gtk-go-back</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="sensitive">False</property>
                 <property name="receives_default">True</property>
                 <property name="use_stock">True</property>
               </widget>
