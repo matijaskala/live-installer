@@ -287,6 +287,9 @@ class InstallerWindow:
         
         self.window.show_all()
 
+        self.wTree.get_widget("button_custommount").hide()
+        self.wTree.get_widget("button_edit").hide()
+
         # fix text wrap
         self.fix_text_wrap()
 
