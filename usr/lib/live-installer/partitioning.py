@@ -121,7 +121,7 @@ def add_partition_dialog(widget, path, viewcol):
     for flag in dlg.part_flags:
         new_partition.partition.setFlag(flag)
     model = installer.wTree.get_widget("treeview_disks").get_model()
-    iter_to_insert = (new_partition.partition.path, '<span foreground="{}">{}</span>'.format(new_partition.color, new_partition.type), new_partition.description,
+    iter_to_insert = (new_partition.partition.path, '<span foreground="{}">{}</span>'.format(new_partition.color, dlg.part_type != parted.PARTITION_EXTENDED ? new_partition.type : parted.PARTITION_RAID), new_partition.description,
                       new_partition.format_as, new_partition.mount_as, new_partition.size, new_partition.size, new_partition, partition.partition.disk.device.path)
     update_geometry = False
     if dlg.at_end:
