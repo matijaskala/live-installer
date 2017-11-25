@@ -145,8 +145,8 @@ def add_partition_dialog(widget, path, viewcol):
     installer.setup.partitions = sorted(installer.setup.partitions, key=lambda part: part.partition.geometry.start)
     assign_mount_point(new_partition, dlg.mount_as, dlg.format_as)
     if dlg.part_type == parted.PARTITION_EXTENDED:
-        part_geometry = parted.Geometry(device, new_partition.geometry.start + 1024**2 / device.sectorSize,
-                                        new_partition.geometry.end - new_partition.geometry.start - 1024**2 / device.sectorSize)
+        part_geometry = parted.Geometry(device, new_partition.partition.geometry.start + 1024**2 / device.sectorSize,
+                                        new_partition.partition.geometry.end - new_partition.partition.geometry.start - 1024**2 / device.sectorSize)
         new_partition = Partition(parted.Partition(disk=partition.partition.disk, type=parted.PARTITION_FREESPACE, geometry=part_geometry))
         iter_to_insert = ('', '<span foreground="{}">{}</span>'.format(new_partition.color, new_partition.type), '',
                           '', '', new_partition.size, '', new_partition, partition.partition.disk.device.path)
