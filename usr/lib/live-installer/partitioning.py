@@ -125,12 +125,12 @@ def add_partition_dialog(widget, path, viewcol):
                       new_partition.format_as, new_partition.mount_as, new_partition.size, new_partition.size, new_partition, partition.partition.disk.device.path)
     update_geometry = False
     if dlg.at_end:
-        model.insert_after(model.iter_parent(iter), iter, iter_to_insert)
+        new_iter = model.insert_after(model.iter_parent(iter), iter, iter_to_insert)
         if partition.partition.geometry.start < new_partition.partition.geometry.start - 1024**2 / device.sectorSize:
             partition.partition.geometry.end = new_partition.partition.geometry.start - 1
             update_geometry = True
     else:
-        model.insert_before(model.iter_parent(iter), iter, iter_to_insert)
+        new_iter = model.insert_before(model.iter_parent(iter), iter, iter_to_insert)
         if partition.partition.geometry.end > new_partition.partition.geometry.end + 1024**2 / device.sectorSize:
             partition.partition.geometry.start = new_partition.partition.geometry.end + 1
             update_geometry = True
@@ -144,6 +144,14 @@ def add_partition_dialog(widget, path, viewcol):
     installer.setup.partitions.append(new_partition)
     installer.setup.partitions = sorted(installer.setup.partitions, key=lambda part: part.partition.geometry.start)
     assign_mount_point(new_partition, dlg.mount_as, dlg.format_as)
+    if dlg.part_type == parted.PARTITION_EXTENDED:
+        part_geometry = parted.Geometry(device, new_partition.geometry.start + 1024**2 / device.sectorSize,
+                                        new_partition.geometry.end - new_partition.geometry.start - 1024**2 / device.sectorSize)
+        new_partition = Partition(parted.Partition(disk=partition.partition.disk, type=parted.PARTITION_FREESPACE, geometry=part_geometry))
+        iter_to_insert = ('', '<span foreground="{}">{}</span>'.format(new_partition.color, new_partition.type), '',
+                          '', '', new_partition.size, '', new_partition, partition.partition.disk.device.path)
+        model.append(new_iter, iter_to_insert)
+        installer.setup.partitions.append(new_partition)
     installer.wTree.get_widget("button_add_partition").set_sensitive(False)
     installer.wTree.get_widget("button_edit_partition").set_sensitive(False)
     installer.wTree.get_widget("button_remove_partition").set_sensitive(False)
