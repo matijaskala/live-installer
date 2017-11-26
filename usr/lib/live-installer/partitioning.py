@@ -689,8 +689,8 @@ class AddDialog(object):
             ])
             self.part_type = parted.PARTITION_NORMAL
         elif self.disk_type == 'msdos':
-            self.dTree.get_widget("add_combobox_type").get_model().append(['Extended'])
-            self.dTree.get_widget("add_label_type").show()
+            #self.dTree.get_widget("add_combobox_type").get_model().append(['Extended'])
+            #self.dTree.get_widget("add_label_type").show()
             #self.dTree.get_widget("add_combobox_type").show()
             self.dTree.get_widget("add_combobox_type").set_active(0)
             self.dTree.get_widget("add_combobox_type").connect("changed", onTypeChanged, self.dTree, [
