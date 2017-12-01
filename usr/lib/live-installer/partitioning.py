@@ -233,19 +233,26 @@ def partitions_popup_menu(widget, event):
         "swap" in partition_type):
         return
     if (partition.partition.number == -1):
-        installer.wTree.get_widget("button_add_partition").set_sensitive(True)
+        part_disk = partition.partition.disk
+        part_count = len(part_disk.getPrimaryPartitions())
+        if part_disk.getExtendedPartition() != None:
+            part_count += 1
+        can_add = part_disk.type != "msdos" or part_count < 4
+        installer.wTree.get_widget("button_add_partition").set_sensitive(can_add)
     else:
+        can_add = False
         installer.wTree.get_widget("button_edit_partition").set_sensitive(True)
         installer.wTree.get_widget("button_remove_partition").set_sensitive(True)
     if event.button != 3:
         return
     if (partition.partition.number == -1):
-        menu = gtk.Menu()
-        menuItem = gtk.MenuItem(_("Add"))
-        menuItem.connect("activate", add_partition_dialog, None, None)
-        menu.append(menuItem)
-        menu.show_all()
-        menu.popup(None, None, None, event.button, event.time)
+        if can_add:
+            menu = gtk.Menu()
+            menuItem = gtk.MenuItem(_("Add"))
+            menuItem.connect("activate", add_partition_dialog, None, None)
+            menu.append(menuItem)
+            menu.show_all()
+            menu.popup(None, None, None, event.button, event.time)
         return
     menu = gtk.Menu()
     menuItem = gtk.MenuItem(_("Edit"))
