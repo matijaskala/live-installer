@@ -229,8 +229,7 @@ def partitions_popup_menu(widget, event):
     partition = model.get_value(iter, IDX_PART_OBJECT)
     if not partition: return
     partition_type = model.get_value(iter, IDX_PART_TYPE)
-    if (partition.partition.type == parted.PARTITION_EXTENDED or
-        "swap" in partition_type):
+    if partition.partition.type == parted.PARTITION_EXTENDED:
         return
     if (partition.partition.number == -1):
         part_disk = partition.partition.disk
@@ -245,7 +244,7 @@ def partitions_popup_menu(widget, event):
         installer.wTree.get_widget("button_remove_partition").set_sensitive(True)
     if event.button != 3:
         return
-    if (partition.partition.number == -1):
+    if partition.partition.number == -1:
         if can_add:
             menu = gtk.Menu()
             menuItem = gtk.MenuItem(_("Add"))
@@ -261,14 +260,15 @@ def partitions_popup_menu(widget, event):
     menuItem = gtk.MenuItem(_("Remove"))
     menuItem.connect("activate", remove_partition_dialog, None, None)
     menu.append(menuItem)
-    menuItem = gtk.SeparatorMenuItem()
-    menu.append(menuItem)
-    menuItem = gtk.MenuItem(_("Assign to /"))
-    menuItem.connect("activate", lambda w: assign_mount_point(partition, '/', 'ext4'))
-    menu.append(menuItem)
-    menuItem = gtk.MenuItem(_("Assign to /home"))
-    menuItem.connect("activate", lambda w: assign_mount_point(partition, '/home', ''))
-    menu.append(menuItem)
+    if "swap" not in partition_type:
+        menuItem = gtk.SeparatorMenuItem()
+        menu.append(menuItem)
+        menuItem = gtk.MenuItem(_("Assign to /"))
+        menuItem.connect("activate", lambda w: assign_mount_point(partition, '/', 'ext4'))
+        menu.append(menuItem)
+        menuItem = gtk.MenuItem(_("Assign to /home"))
+        menuItem.connect("activate", lambda w: assign_mount_point(partition, '/home', ''))
+        menu.append(menuItem)
     if installer.setup.gptonefi:
         menuItem = gtk.SeparatorMenuItem()
         menu.append(menuItem)
